@@ -48,20 +48,48 @@ export const CompleteToDoList: React.FC = () => {
   // 5. Show completion status for each todo
   // 
   // Example state structure:
-  // const [todos, setTodos] = useState<Todo[]>([]);
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [inputValue, setInputValue] = useState('');
+
   // 
   // Example update function:
-  // const markCompleted = (id: number) => {
-  //   setTodos(todos.map(todo => 
-  //     todo.id === id ? {...todo, completed: true} : todo
-  //   ));
-  // };
+  const markCompleted = (id: number) => {
+    setTodos(todos.map(todo => 
+      todo.id === id ? {...todo, completed: true} : todo
+    ));
+  };
 
   return (
     <div>
       {/* TODO: Replace this with your implementation */}
-      <h4>Complete ToDo List Component</h4>
-      <p>Implement immutable state updates here</p>
+      <form onSubmit={(e) => {
+        e.preventDefault();
+
+        if (!inputValue.trim()) return;
+
+        const candidateTodo: Todo = {
+          id: Date.now(),
+          title: inputValue,
+          completed: false
+        }
+        setTodos([...todos, candidateTodo]);
+        setInputValue('');
+      }}>
+        <span>Todo Title:</span>
+        <input placeholder='Add todo' value={inputValue} onChange={(e) => setInputValue(e.target.value)} />
+        <button type='submit'>Add Todo</button>
+      </form>
+
+      <div>
+        {
+          todos.map((item) =>
+            <div key={item.id}>
+              <span>{item.title} - {item.completed ? 'completed' : 'not completed'}</span>
+              {!item.completed && <span><button onClick={() => markCompleted(item.id)}>Complete</button></span>}
+            </div>
+          )
+        }
+      </div>
     </div>
   );
 }; 

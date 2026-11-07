@@ -54,20 +54,59 @@ export const FilteredToDoList: React.FC = () => {
   // 5. Add complete functionality for todos
   // 
   // Example implementation:
-  // const [todos, setTodos] = useState<Todo[]>([]);
-  // const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [inputValue, setInputValue] = useState('');
+  const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
   // 
-  // const filteredTodos = todos.filter(todo => {
-  //   if (filter === 'active') return !todo.completed;
-  //   if (filter === 'completed') return todo.completed;
-  //   return true; // 'all' case
-  // });
+  const markCompleted = (id: number) => {
+    setTodos(todos.map(todo =>
+      todo.id === id ? { ...todo, completed: true } : todo
+    ));
+  };
+
+  const filteredTodos = todos.filter(todo => {
+    if (filter === 'active') return !todo.completed;
+    if (filter === 'completed') return todo.completed;
+    return true; // 'all' case
+  });
 
   return (
     <div>
       {/* TODO: Replace this with your implementation */}
-      <h4>Filtered ToDo List Component</h4>
-      <p>Implement derived state and filtering here</p>
+      <form onSubmit={(e) => {
+        e.preventDefault();
+
+        if (!inputValue.trim()) return;
+
+        const candidateTodo: Todo = {
+          id: Date.now(),
+          title: inputValue,
+          completed: false
+        }
+        setTodos([...todos, candidateTodo]);
+        setInputValue('');
+      }}>
+        <span>Todo Title:</span>
+        <input placeholder='Add todo' value={inputValue} onChange={(e) => setInputValue(e.target.value)} />
+        <button type='submit'>Add Todo</button>
+      </form>
+
+      <div>
+        <span><button onClick={() => setFilter('all')}>All</button></span>
+        <span><button onClick={() => setFilter('active')}>Active</button></span>
+        <span><button onClick={() => setFilter('completed')}>Completed</button></span>
+      </div>
+
+      <div>
+        {
+          filteredTodos.map((item) =>
+            <div key={item.id}>
+              <span>{item.title} - {item.completed ? 'completed' : 'not completed'}</span>
+              {!item.completed && <span><button onClick={() => markCompleted(item.id)}>Complete</button></span>}
+            </div>
+          )
+        }
+      </div>
     </div>
   );
 }; 

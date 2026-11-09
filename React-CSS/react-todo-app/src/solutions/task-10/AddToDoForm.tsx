@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Todo } from '../../types';
+import { ToDoList } from '../task-01/ToDoList';
 
 /**
  * Task 10: AddToDoForm Component
@@ -83,28 +84,32 @@ export const AddToDoForm: React.FC = () => {
   // 5. Validate that input is not empty
   // 
   // Example implementation:
-  // const [title, setTitle] = useState('');
-  // const [todos, setTodos] = useState<Todo[]>([]);
+  const [title, setTitle] = useState('');
+  const [todos, setTodos] = useState<Todo[]>([]);
   // 
-  // const handleSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   if (!title.trim()) return;
-  //   
-  //   const newTodo: Todo = {
-  //     id: Date.now(),
-  //     title: title.trim(),
-  //     completed: false
-  //   };
-  //   
-  //   setTodos([...todos, newTodo]);
-  //   setTitle('');
-  // };
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim()) return;
+    
+    const newTodo: Todo = {
+      id: Date.now(),
+      title: title.trim(),
+      completed: false
+    };
+
+    setTodos([...todos, newTodo]);
+    setTitle('');
+  };
 
   return (
     <div>
-      {/* TODO: Replace this with your implementation */}
-      <h4>Add ToDo Form Component</h4>
-      <p>Implement controlled form handling here</p>
+      <form onSubmit={handleSubmit}>
+        <span>Title:</span>
+        <input onChange={(e) => setTitle(e.target.value)} value={title} placeholder="Add todo" />
+        <button type="submit">Submit</button>
+      </form>
+
+      <ToDoList todos={todos} />
     </div>
   );
 }; 

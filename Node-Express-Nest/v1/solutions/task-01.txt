@@ -1,0 +1,19 @@
+Node.js v1 Task 01 — Custom Event Emitter
+
+MessageSystem extends Node.js EventEmitter. It sends messages with a
+string ID and a timestamp. Callers can subscribe to all messages or to
+a specific type. The system tracks active users in a Set and emits
+user-joined and user-left events.
+
+The system keeps the latest 100 messages and returns the latest 10
+by default. Clearing the history emits history-cleared. The statistics
+include the number of retained messages, active users, and messages
+per type.
+
+Implementation: solutions/node/task-01.js (relative to Node-Express-Nest/v1).
+
+From the repository root, run:
+  node Node-Express-Nest/v1/solutions/node/task-01-test.js
+
+The tests exercise the MessageSystem class directly. No npm dependencies
+are required. All 8 tests passed.

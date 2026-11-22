@@ -26,7 +26,24 @@ class MessageSystem extends EventEmitter {
    * @param {string} sender - Optional sender name
    * @returns {object} Created message object
    */
-  sendMessage(type, content, sender = "System") {}
+  sendMessage(type, content, sender = "System") {
+    const currentMessage = {
+      id: String(this.messageId++),
+      type,
+      content,
+      timestamp: new Date(),
+      sender
+    }
+
+    this.messages.push(currentMessage);
+
+    this.emit("all-messages", currentMessage);
+    this.emit(type, currentMessage);
+
+    this.messages.splice(0, this.messages.length - 100);
+
+    return currentMessage;
+  }
 
   /**
    * Subscribe to all message types
@@ -35,7 +52,9 @@ class MessageSystem extends EventEmitter {
    *
    * @param {function} callback - Callback function to handle messages
    */
-  subscribeToMessages(callback) {}
+  subscribeToMessages(callback) {
+    this.on("all-messages", callback);
+  }
 
   /**
    * Subscribe to specific message type
@@ -44,8 +63,10 @@ class MessageSystem extends EventEmitter {
    *
    * @param {string} type - Message type to subscribe to
    * @param {function} callback - Callback function to handle messages
-   */
-  subscribeToType(type, callback) {}
+   */ 
+  subscribeToType(type, callback) {
+    this.on(type, callback);
+  }
 
   /**
    * Get current number of active users
@@ -54,7 +75,9 @@ class MessageSystem extends EventEmitter {
    *
    * @returns {number} Number of active users
    */
-  getUserCount() {}
+  getUserCount() {
+    return this.users.size;
+  }
 
   /**
    * Get the last N messages (default 10)
@@ -64,7 +87,10 @@ class MessageSystem extends EventEmitter {
    * @param {number} count - Number of messages to retrieve
    * @returns {array} Array of recent messages
    */
-  getMessageHistory(count = 10) {}
+  getMessageHistory(count = 10) {
+    const startIndex = Math.max(0, this.messages.length - count);
+    return this.messages.slice(startIndex);
+  }
 
   /**
    * Add a user to the system
@@ -74,7 +100,10 @@ class MessageSystem extends EventEmitter {
    *
    * @param {string} username - Username to add
    */
-  addUser(username) {}
+  addUser(username) {
+    this.users.add(username);
+    return this.emit('user-joined', {content: username});
+  }
 
   /**
    * Remove a user from the system
@@ -84,7 +113,10 @@ class MessageSystem extends EventEmitter {
    *
    * @param {string} username - Username to remove
    */
-  removeUser(username) {}
+  removeUser(username) {
+    this.users.delete(username);
+    this.emit('user-left', {content: username});
+  }
 
   /**
    * Get all active users
@@ -93,7 +125,9 @@ class MessageSystem extends EventEmitter {
    *
    * @returns {array} Array of usernames
    */
-  getActiveUsers() {}
+  getActiveUsers() {
+    return [...this.users];
+  }
 
   /**
    * Clear all messages
@@ -101,7 +135,10 @@ class MessageSystem extends EventEmitter {
    * Clear messages array
    * Emit history-cleared event
    */
-  clearHistory() {}
+  clearHistory() {
+    this.messages.splice(0, this.messages.length);
+    return this.emit('history-cleared');
+  }
 
   /**
    * Get system statistics
@@ -110,7 +147,23 @@ class MessageSystem extends EventEmitter {
    *
    * @returns {object} System stats
    */
-  getStats() {}
+  getStats() {
+    let messagesByType = {
+      message: 0,
+      notification: 0,
+      alert: 0
+    }
+
+    for (const item of this.messages) {
+      messagesByType[item.type]++;
+    }
+
+    return {
+      totalMessages: this.messages.length,
+      activeUsers: this.users.size,
+      messagesByType
+    };
+  }
 }
 
 // Export the MessageSystem class
